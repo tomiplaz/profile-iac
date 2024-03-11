@@ -1,4 +1,10 @@
 terraform {
+  cloud {
+    organization = "tomiplaz"
+    workspaces {
+      name = "profile-iac"
+    }
+  }
   required_providers {
     digitalocean = {
       source = "digitalocean/digitalocean"
