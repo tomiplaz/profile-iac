@@ -14,6 +14,9 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_droplet" "profile-iac" {
-  # ...
+  image  = "debian-12-x64"
+  name   = "profile-iac"
+  region = "fra1"
+  size   = "s-1vcpu-512mb-10gb"
 }
 
