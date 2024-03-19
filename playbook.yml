@@ -1,0 +1,8 @@
+- name: check in
+  hosts: servers
+  remote_user: root
+
+  tasks:
+  - name: append timestamp to file
+    ansible.builtin.shell: date >> checkins.txt
+
