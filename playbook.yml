@@ -1,4 +1,4 @@
-- name: check in
+- name: main
   hosts: servers
   remote_user: root
 
@@ -6,3 +6,17 @@
   - name: append timestamp to file
     ansible.builtin.shell: date >> checkins.txt
 
+  - name: install git
+      ansible.builtin.package:
+        name: git
+        state: present
+
+  - name: install apache
+      ansible.builtin.package:
+        name: apache2
+        state: present
+
+  - name: install node
+      ansible.builtin.package:
+        name: node
+        state: present
