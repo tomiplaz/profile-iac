@@ -20,3 +20,27 @@
     ansible.builtin.package:
       name: nodejs
       state: present
+
+  - name: have ssh keypair
+    community.crypto.openssh_keypair:
+      path: /root/.ssh/id_rsa
+
+  - name: read ssh public key
+    ansible.builtin.slurp:
+      src: /root/.ssh/id_rsa.pub
+    register: ssh_public_key
+
+  - name: post ssh public key to github
+    uri:
+      url: "https://api.github.com/user/keys"
+      method: POST
+      headers:
+        Accept: "application/vnd.github+json"
+        Authorization: "Bearer {{ github_token }}"
+        X-GitHub-Api-Version: "2022-11-28"
+      body_format: json
+      body:
+        title: "profile-iac-ansible"
+        key: "{{ ssh_public_key['content'] | b64decode }}"
+      status_code: 201
+    delegate_to: localhost
