@@ -42,5 +42,16 @@
       body:
         title: "profile-iac-ansible"
         key: "{{ ssh_public_key['content'] | b64decode }}"
-      status_code: 201
+      status_code: [201, 422]
+      return_content: true
     delegate_to: localhost
+    register: response
+    failed_when: >
+      response.status == 422 and
+      response.json.errors[0].message != 'key is already in use'
+
+  - name: have profile repo
+    ansible.builtin.git:
+      repo: git@github.com:tomiplaz/profile.git
+      dest: /var/www/profile
+      accept_newhostkey: true
