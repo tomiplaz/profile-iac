@@ -55,3 +55,15 @@
       repo: git@github.com:tomiplaz/profile.git
       dest: /var/www/profile
       accept_newhostkey: true
+
+  - name: have yamb-v2 repo
+    ansible.builtin.git:
+      repo: git@github.com:tomiplaz/yamb-v2.git
+      dest: /var/www/yamb-v2
+      accept_newhostkey: true
+
+  - name: have blog-api repo
+    ansible.builtin.git:
+      repo: git@github.com:tomiplaz/blog-api.git
+      dest: /var/www/blog-api
+      accept_newhostkey: true
