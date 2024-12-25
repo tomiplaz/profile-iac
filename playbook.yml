@@ -67,3 +67,19 @@
       repo: git@github.com:tomiplaz/blog-api.git
       dest: /var/www/blog-api
       accept_newhostkey: true
+
+  - name: have profile apache site config
+    ansible.builtin.copy:
+      src: apache/sites/profile.conf
+      dest: /etc/apache2/sites-available/profile.conf
+
+  - name: have yamb apache site config
+    ansible.builtin.copy:
+      src: apache/sites/yamb.conf
+      dest: /etc/apache2/sites-available/yamb.conf
+
+  - name: have blogs apache site config
+    ansible.builtin.copy:
+      src: apache/sites/blogs.conf
+      dest: /etc/apache2/sites-available/blogs.conf
+
