@@ -1,0 +1,64 @@
+- name: main
+  hosts: all
+  remote_user: root
+
+  tasks:
+  - name: append timestamp to file
+    ansible.builtin.shell: date >> checkins.txt
+
+  - name: install packages
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - git
+      - apache2
+      - nodejs
+
+  - name: create ssh keypair
+    community.crypto.openssh_keypair:
+      path: /root/.ssh/id_rsa
+
+  - name: read ssh public key
+    ansible.builtin.slurp:
+      src: /root/.ssh/id_rsa.pub
+    register: ssh_public_key
+
+  - name: post ssh public key to github
+    uri:
+      url: "https://api.github.com/user/keys"
+      method: POST
+      headers:
+        Accept: "application/vnd.github+json"
+        Authorization: "Bearer {{ github_token }}"
+        X-GitHub-Api-Version: "2022-11-28"
+      body_format: json
+      body:
+        title: "profile-iac-ansible"
+        key: "{{ ssh_public_key['content'] | b64decode }}"
+      status_code: [201, 422]
+      return_content: true
+    delegate_to: localhost
+    register: response
+    failed_when: >
+      response.status == 422 and
+      response.json.errors[0].message != 'key is already in use'
+
+  - name: clone git repositories
+    ansible.builtin.git:
+      repo: "git@github.com:tomiplaz/{{ item }}.git"
+      dest: "/var/www/{{ item }}"
+      accept_newhostkey: true
+    loop:
+      - profile
+      - yamb-v2
+      - blog-api
+
+  - name: copy apache sites configs
+    ansible.builtin.copy:
+      src: "apache/sites/{{ item }}.conf"
+      dest: "/etc/apache2/sites-available/{{ item }}.conf"
+    loop:
+      - profile
+      - yamb
+      - blogs
