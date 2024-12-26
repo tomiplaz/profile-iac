@@ -1,0 +1,33 @@
+- name: letsencrypt
+  hosts: all
+  remote_user: root
+  vars:
+    acme_challenge_type: http-01
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    letsencrypt_dir: /etc/letsencrypt
+    letsencrypt_keys_dir: /etc/letsencrypt/keys
+    letsencrypt_csrs_dir: /etc/letsencrypt/csrs
+    letsencrypt_certs_dir: /etc/letsencrypt/certs
+    letsencrypt_account_key: /etc/letsencrypt/account/account.key
+    domain_name: tomiplaz.dev
+
+- tasks:
+  - name: create directories
+    ansible.builtin.file:
+      path: "/etc/letsencrypt/{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 600
+    with_items:
+    - account
+    - certs
+    - csrs
+    - keys
+
+  - name: create account key
+    shell: |
+      if [ ! -f {{ letsencrypt_account_key }} ]; then
+        openssl genrsa 4096 | tee {{ letsencrypt_account_key }};
+      fi
