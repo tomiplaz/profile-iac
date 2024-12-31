@@ -47,7 +47,7 @@
       -config "<(cat /etc/ssl/openssl.cnf <(printf \"\n[SAN]\nsubjectAltName=DNS:{{ domain_name }},DNS:www.{{ domain_name }}\")) | tee {{ letsencrypt_csrs_dir }}/{{ domain_name }}.csr"
 
   - name: submit csr
-    letsencrypt:
+    acme_certificate:
       acme_directory: "{{ acme_directory }}"
       acme_version: "{{ acme_version }}"
       account_key_src: "{{ letsencrypt_account_key }}"
@@ -80,7 +80,7 @@
     - "www.{{ domain_name }}"
 
   - name: complete challenges
-    letsencrypt:
+    acme_certificate:
       acme_directory: "{{ acme_directory }}"
       acme_version: "{{ acme_version }}"
       account_key_src: "{{ letsencrypt_account_key }}"
