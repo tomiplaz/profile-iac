@@ -28,24 +28,15 @@
     - keys
 
   - name: generate account key
-    shell: |
-      if [ ! -f {{ letsencrypt_account_key }} ]; then
-        openssl genrsa 4096 | tee {{ letsencrypt_account_key }};
-      fi
+    shell: "if [ ! -f {{ letsencrypt_account_key }} ]; then openssl genrsa 4096 | tee {{ letsencrypt_account_key }}; fi"
 
   - name: generate private key
-    shell: |
-      openssl genrsa 4096 | tee {{ letsencrypt_keys_dir }}/{{ domain_name }}.key
+    shell: "openssl genrsa 4096 | tee {{ letsencrypt_keys_dir }}/{{ domain_name }}.key"
 
   - name: generate csr
-    shell: |
-      openssl req
-      -new
-      -sha256
-      -key "/etc/letsencrypt/keys/{{ domain_name }}.key"
-      -subj "\"/CN={{ domain_name }}\""
-      -reqexts SAN
-      -config "<(cat /etc/ssl/openssl.cnf <(printf \"\n[SAN]\nsubjectAltName=DNS:{{ domain_name }},DNS:www.{{ domain_name }}\")) | tee {{ letsencrypt_csrs_dir }}/{{ domain_name }}.csr"
+    shell: "openssl req -new -sha256 -key /etc/letsencrypt/keys/{{ domain_name }}.key -subj \"/CN={{ domain_name }}\" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf \"\n[SAN]\nsubjectAltName=DNS:{{ domain_name }},DNS:www.{{ domain_name }}\")) | tee {{ letsencrypt_csrs_dir }}/{{ domain_name }}.csr"
+    args:
+      executable: /bin/bash
 
   - name: submit csr
     acme_certificate:
