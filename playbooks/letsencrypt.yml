@@ -1,6 +1,7 @@
 - name: letsencrypt
   hosts: all
   remote_user: root
+
   vars:
     acme_challenge_type: http-01
     acme_directory: https://acme-v02.api.letsencrypt.org/directory
@@ -12,7 +13,7 @@
     letsencrypt_account_key: /etc/letsencrypt/account/account.key
     domain_name: tomiplaz.dev
 
-- tasks:
+  tasks:
   - name: create directories
     ansible.builtin.file:
       path: "/etc/letsencrypt/{{ item }}"
